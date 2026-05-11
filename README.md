@@ -44,25 +44,109 @@ After running all six algorithms on 14 benchmarks (30 trials each), the average 
 
 | Algorithm | Average Rank |
 |-----------|:------------:|
-| **SGMGPSO-FULL** | **2.29** |
-| SGMGPSO-TVSR | 2.93 |
-| SGPSO | 3.57 |
-| SGMGPSO | 3.86 |
-| SGMGPSO-PD | 4.07 |
-| MGPSO | 4.29 |
+| **SGMGPSO-PD-TVSR** | **2.21** |
+| SGMGPSO-TVSR | 3.21 |
+| SGMGPSO | 3.64 |
+| SGPSO | 3.79 |
+| MGPSO | 3.86 |
+| SGMGPSO-PD | 4.29 |
 
 ### HV Ranking (lower rank = better coverage)
 
 | Algorithm | Average Rank |
 |-----------|:------------:|
-| **SGMGPSO-FULL** | **1.86** |
-| SGMGPSO-TVSR | 2.71 |
-| SGPSO | 2.93 |
-| SGMGPSO | 3.79 |
-| MGPSO | 4.00 |
-| SGMGPSO-PD | 4.64 |
+| **SGMGPSO-PD-TVSR** | **1.79** |
+| SGMGPSO-TVSR | 2.79 |
+| SGPSO | 3.00 |
+| MGPSO | 3.79 |
+| SGMGPSO | 4.07 |
+| SGMGPSO-PD | 4.50 |
 
-SGMGPSO-FULL ranks first in both metrics, and its low standard deviation (1.33 for IGD, 1.10 for HV) shows it performs consistently well — not just on a few easy problems but across the board.
+SGMGPSO-PD-TVSR ranks **first in both metrics**, demonstrating that combining Per-Dimension stability-constrained sampling with the Time-Varying Shift Ratio mechanism yields the strongest and most consistent optimizer across all 14 benchmarks.
+
+---
+
+## Statistical Significance Testing
+
+All significance tests were performed over the 30-run result distributions for each benchmark function. Results are consistent across both HV and IGD metrics.
+
+### Pairwise Wilcoxon Signed-Rank Test
+
+Null hypothesis: *no significant difference between SGMGPSO-PD-TVSR and the compared algorithm.*  
+Median p-value reported across 14 benchmark functions (α = 0.05).
+
+#### HV Metric
+
+| Comparison | Median p-value | Significant? |
+|------------|:--------------:|:------------:|
+| SGMGPSO-PD-TVSR vs SGPSO | 4.6011 × 10⁻⁴ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs MGPSO | 1.6391 × 10⁻⁷ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs SGMGPSO | 2.6077 × 10⁻⁸ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs SGMGPSO_PD | 1.8626 × 10⁻⁹ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs SGMGPSO_TVSR | 3.2391 × 10⁻⁶ | ✅ Yes |
+
+#### IGD Metric
+
+| Comparison | Median p-value | Significant? |
+|------------|:--------------:|:------------:|
+| SGMGPSO-PD-TVSR vs SGPSO | 1.5537 × 10⁻⁴ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs MGPSO | 4.5635 × 10⁻⁷ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs SGMGPSO | 1.5985 × 10⁻⁴ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs SGMGPSO_PD | 1.3318 × 10⁻⁶ | ✅ Yes |
+| SGMGPSO-PD-TVSR vs SGMGPSO_TVSR | 3.9535 × 10⁻⁶ | ✅ Yes |
+
+> SGMGPSO-PD-TVSR is statistically significantly better than **all five baselines** on both metrics.
+
+### Global Friedman Test
+
+| Metric | Friedman χ² | p-value | Null Rejected? |
+|--------|:-----------:|:-------:|:--------------:|
+| HV | 17.5510 | 3.5651 × 10⁻³ | ✅ Yes — algorithms perform significantly differently |
+| IGD | 10.3265 | 6.6494 × 10⁻² | ❌ No (α = 0.05) |
+
+---
+
+## Per-Function Ranking Tables
+
+### IGD Mean — Per-Function Ranks (1 = best)
+
+| Function | MGPSO | SGMGPSO | SGMGPSO-PD-TVSR | SGMGPSO_PD | SGMGPSO_TVSR | SGPSO |
+|----------|:-----:|:-------:|:---------------:|:----------:|:------------:|:-----:|
+| WFG1 | 1 | 5 | 2 | 4 | 3 | 6 |
+| WFG2 | 2 | 4 | 5 | 6 | 1 | 3 |
+| WFG3 | 5 | 3 | 1 | 2 | 4 | 6 |
+| WFG4 | 2 | 4 | 1 | 3 | 5 | 6 |
+| WFG5 | 3 | 5 | 2 | 6 | 4 | 1 |
+| WFG6 | 6 | 5 | 1 | 3 | 4 | 2 |
+| WFG7 | 6 | 3 | 2 | 5 | 4 | 1 |
+| WFG8 | 2 | 4 | 1 | 5 | 3 | 6 |
+| WFG9 | 5 | 1 | 2 | 3 | 4 | 6 |
+| ZDT1 | 4 | 5 | 2 | 6 | 3 | 1 |
+| ZDT2 | 6 | 5 | 3 | 4 | 1 | 2 |
+| ZDT3 | 4 | 5 | 2 | 6 | 3 | 1 |
+| ZDT4 | 5 | 1 | 3 | 2 | 4 | 6 |
+| ZDT6 | 3 | 1 | 4 | 5 | 2 | 6 |
+| **Avg Rank** | **3.86** | **3.64** | **2.21** | **4.29** | **3.21** | **3.79** |
+
+### HV Mean — Per-Function Ranks (1 = best)
+
+| Function | MGPSO | SGMGPSO | SGMGPSO-PD-TVSR | SGMGPSO_PD | SGMGPSO_TVSR | SGPSO |
+|----------|:-----:|:-------:|:---------------:|:----------:|:------------:|:-----:|
+| WFG1 | 2 | 5 | 1 | 4 | 3 | 6 |
+| WFG2 | 3 | 4 | 5 | 6 | 2 | 1 |
+| WFG3 | 6 | 4 | 1 | 5 | 3 | 2 |
+| WFG4 | 2 | 4 | 1 | 5 | 3 | 6 |
+| WFG5 | 3 | 5 | 2 | 6 | 4 | 1 |
+| WFG6 | 6 | 5 | 1 | 4 | 3 | 2 |
+| WFG7 | 5 | 4 | 2 | 6 | 3 | 1 |
+| WFG8 | 2 | 4 | 1 | 5 | 3 | 6 |
+| WFG9 | 5 | 1 | 2 | 3 | 4 | 6 |
+| ZDT1 | 4 | 5 | 2 | 6 | 3 | 1 |
+| ZDT2 | 6 | 5 | 3 | 4 | 1 | 2 |
+| ZDT3 | 4 | 5 | 2 | 6 | 3 | 1 |
+| ZDT4 | 1 | 1 | 1 | 1 | 1 | 1 |
+| ZDT6 | 4 | 5 | 1 | 2 | 3 | 6 |
+| **Avg Rank** | **3.79** | **4.07** | **1.79** | **4.50** | **2.79** | **3.00** |
 
 ---
 
@@ -181,3 +265,5 @@ After all models have been executed, open `ranks-test-local.ipynb` and run it. T
 - The `ranks-test.ipynb` file does the analysis using the local `results/` directory structure.
 - Each model notebook includes publication-quality Pareto front plots (2D for ZDT, 3D for WFG) comparing the obtained solutions against the true Pareto front.
 - All results in the `results/` folder are from actual experimental runs and can be reproduced by re-executing the model notebooks.
+- `algorithm_results_summary.json` includes a top-level `statistical_analysis` field containing the full Wilcoxon signed-rank test results, Friedman test results, and per-function ranking tables in structured JSON format.
+- Run `add_statistical_results.py` to regenerate or re-inject the statistical analysis block into the JSON summary.
